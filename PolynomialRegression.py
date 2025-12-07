@@ -116,7 +116,7 @@ plt.legend()
 plt.show()
 
 # Example prediction
-new_data_df = data_full.iloc[200:205][['total_bill','size']] # New data for prediction
+new_data_df = data_full.iloc[200:][['total_bill','size']] # New data for prediction
 new_data = new_data_df.values
 
 new_total_bill_sq = (new_data_df['total_bill'] ** 2).values.reshape(-1, 1)
@@ -130,9 +130,19 @@ new_X_poly_B = np.hstack((new_data, new_total_bill_sq))
 preds_A = predict(new_X_poly_A, w_A, X_mean_A, X_std_A)
 preds_B = predict(new_X_poly_B, w_B, X_mean_B, X_std_B)
 
-print("Predictions from Model A (More Features):", preds_A)
-print("Predictions from Model B (Fewer Features):", preds_B)
+actual_tips = data_full.iloc[200:]['tip'].values
+plt.figure()
+plt.scatter(actual_tips, preds_A, color='red', label='Model A Predictions', alpha=0.6)
+plt.scatter(actual_tips, preds_B, color='blue', label='Model B Predictions', alpha=0.6)
+plt.xlabel("Actual Tip")
+plt.ylabel("Predicted Tip (Model A)")
+plt.title("Actual vs Predicted Tips (Rows 200+)")
+plt.plot([actual_tips.min(), actual_tips.max()],
+         [actual_tips.min(), actual_tips.max()])
+plt.show()
 
+print("Mean absolute deviation Model A:", np.mean(np.abs(actual_tips - preds_A.flatten())))
+print("Mean absolute deviation Model B:", np.mean(np.abs(actual_tips - preds_B.flatten())))
 
 
 # Conclusion:
